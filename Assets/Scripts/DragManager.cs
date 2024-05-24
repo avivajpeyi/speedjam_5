@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -38,11 +39,17 @@ public class DragManager : MonoBehaviour
             return Vector2.Distance(startPoint, endPoint) / maxLength;
         }
     }
-    
-    
-    
 
-    
+
+    private void OnDrawGizmos()
+    {
+        // Draw the drag vector
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(startPoint, endPoint);
+        
+    }
+
+
     void Start()
     {
         lineRenderer.startColor = startColor;
@@ -112,6 +119,10 @@ public class DragManager : MonoBehaviour
         // Clear the line when releasing the mouse button
         lineRenderer.positionCount = 0;
         Debug.Log("DragVector: " + DragVector + ", Percent: " + Percent); 
+        
+        // // start and end points are now invalid
+        // startPoint = Vector3.zero;
+        // endPoint = Vector3.zero;
     }
 
     public void Hide()
