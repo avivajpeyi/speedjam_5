@@ -13,6 +13,7 @@ public class DragManager : MonoBehaviour
     public Color startColor = Color.green;
     public Color endColor = Color.red;
     private Material LrMaterial; 
+    private Camera cam;
 
     
     public UnityEvent OnMouseRelease;
@@ -37,6 +38,9 @@ public class DragManager : MonoBehaviour
             return Vector2.Distance(startPoint, endPoint) / maxLength;
         }
     }
+    
+    
+    
 
     
     void Start()
@@ -44,6 +48,7 @@ public class DragManager : MonoBehaviour
         lineRenderer.startColor = startColor;
         lineRenderer.endColor = startColor;
         LrMaterial = lineRenderer.material;
+        cam = FindObjectOfType<Camera>();
     }
 
     void Update()
@@ -65,7 +70,7 @@ public class DragManager : MonoBehaviour
 
     public void StartDrawing()
     {
-        startPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        startPoint = cam.ScreenToWorldPoint(Input.mousePosition);
         startPoint.z = 0;
         lineRenderer.positionCount = 2;
         lineRenderer.SetPosition(0, startPoint);
@@ -79,7 +84,7 @@ public class DragManager : MonoBehaviour
     {
         if (isDragging)
         {
-            endPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            endPoint = cam.ScreenToWorldPoint(Input.mousePosition);
             endPoint.z = 0;
 
             // Limit the length of the line
