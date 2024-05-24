@@ -12,7 +12,7 @@ public class DragManager : MonoBehaviour
     public float maxLength = 5f; // Set your desired maximum length
     public Color startColor = Color.green;
     public Color endColor = Color.red;
-    public Material LrMaterial; 
+    private Material LrMaterial; 
 
     
     public UnityEvent OnMouseRelease;
