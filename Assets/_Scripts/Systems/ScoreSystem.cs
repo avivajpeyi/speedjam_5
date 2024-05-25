@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,7 @@ public struct ScoreData
 {
     public string playerId;
     public int score;
+    public string metadata;
 }
 
 
@@ -40,21 +42,35 @@ public class ScoreSystem : StaticInstance<ScoreSystem>
     }
 
 
-    public List<ScoreData> DownloadScores()
+    public List<ScoreData> DownloadScores(
+        Action<List<ScoreData>> callback
+        )
     {
+        Debug.Log("Starting DownloadScores");
+        
         List<ScoreData> scores = new List<ScoreData>();
 
         int count = 50;
 
         LootLockerSDKManager.GetScoreList(LEADERBOARD_KEY, count, 0, (response) =>
         {
+            Debug.Log("Got response from GetScoreList");
             if (response.statusCode == 200)
             {
                 Debug.Log("Successful");
-                foreach (var score in response.items)
+                foreach (var leaderboardMember in response.items)
                 {
-                    Debug.Log(score.player + " " + score.score);
+                    
+                    
+                    Debug.Log(leaderboardMember.member_id + " " + leaderboardMember.score);
+                    scores.Add(new ScoreData
+                    {
+                        playerId = leaderboardMember.member_id,
+                        score = leaderboardMember.score,
+                        metadata = leaderboardMember.metadata
+                    });
                 }
+                callback(scores);
             }
             else
             {

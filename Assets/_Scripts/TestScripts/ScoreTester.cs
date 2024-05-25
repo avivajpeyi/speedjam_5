@@ -13,6 +13,10 @@ public class ScoreTester : MonoBehaviour
     public TMP_InputField playerNameInput;
     public TMP_InputField scoreInput;
     
+    [SerializeField] private LeaderboardEntry _lbEntryPrefab;
+    [SerializeField] private GameObject _lbContent;
+    
+    
     public string memberID;
     
 
@@ -63,14 +67,34 @@ public class ScoreTester : MonoBehaviour
         int score = int.Parse(scoreInput.text);
         string name = playerNameInput.text;
         ScoreSystem.Instance.UploadScore(memberID, score);
+        Debug.Log("Uploaded score, going to download");
         UpdateScoreTable();
         StartGuestSession();
     }
     
     public void UpdateScoreTable()
     {
-        ScoreSystem.Instance.DownloadScores();
+        Debug.Log("Trying to Download and then build score table");
+        List<ScoreData> scores = ScoreSystem.Instance.DownloadScores(BuildScoreTable);
+        
+        
     }
+    
+    public void BuildScoreTable(List<ScoreData> scores)
+    {
+        Debug.Log("Building score table function called ");
+        foreach (Transform child in _lbContent.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        
+        foreach (var score in scores)
+        {
+            Debug.Log("Creating GOs for score");
+            LeaderboardEntry entry = Instantiate(_lbEntryPrefab, _lbContent.transform);
+            entry.Initialise(score);
+        }
+    } 
 
     
 }
