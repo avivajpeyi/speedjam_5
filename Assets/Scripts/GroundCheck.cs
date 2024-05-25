@@ -36,7 +36,9 @@ public class GroundCheck : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D col)
     {
-        if (col.gameObject.CompareTag("Ground") && velocityIsLow)
+        if (col.gameObject.CompareTag("Ground")
+            // && velocityIsLow // REMOVED FOR PLATFORMS
+            )
         {
             Debug.Log("Grounded");
             isGrounded = true;
@@ -45,7 +47,9 @@ public class GroundCheck : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D other)
     {
-        if (other.gameObject.CompareTag("Ground") && velocityIsLow)
+        if (other.gameObject.CompareTag("Ground")
+            // && velocityIsLow // REMOVED FOR PLATFORMS
+            )
         {
             isGrounded = true;
         }

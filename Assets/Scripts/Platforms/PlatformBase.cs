@@ -26,19 +26,19 @@ using UnityEngine.Serialization;
             MovePlayer(change);
         }
 
-        // protected virtual void OnCollisionEnter2D(Collision2D col) {
-        //     if (col.transform.TryGetComponent(out IPlayerController _))
-        //     {
-        //         var normal = col.GetContact(0).normal;
-        //         if (Vector2.Dot(normal, Vector2.down) > 0.5f) // player is on top
-        //             _player = col.transform.GetComponent<Rigidbody2D>();
-        //     }
-        // }
-        //
-        // protected virtual void OnCollisionExit2D(Collision2D col) {
-        //     if (col.transform.TryGetComponent(out IPlayerController _))
-        //         _player = null;
-        // }
+        protected virtual void OnCollisionEnter2D(Collision2D col) {
+            if (col.transform.TryGetComponent(out PlayerController _))
+            {
+                var normal = col.GetContact(0).normal;
+                if (Vector2.Dot(normal, Vector2.down) > 0.5f) // player is on top
+                    _player = col.transform.GetComponent<Rigidbody2D>();
+            }
+        }
+        
+        protected virtual void OnCollisionExit2D(Collision2D col) {
+            if (col.transform.TryGetComponent(out PlayerController _))
+                _player = null;
+        }
 
         protected virtual void MovePlayer(Vector2 change) {
             if (!_player || _player.velocity.magnitude >= unlockThreshold) return;
