@@ -118,11 +118,9 @@ public class DragManager : MonoBehaviour
 
         // Clear the line when releasing the mouse button
         lineRenderer.positionCount = 0;
-        Debug.Log("DragVector: " + DragVector + ", Percent: " + Percent); 
         
-        // // start and end points are now invalid
-        // startPoint = Vector3.zero;
-        // endPoint = Vector3.zero;
+        Debug.Log("DragVector: " + DragVector + ", Percent: " + Percent); 
+
     }
 
     public void Hide()
