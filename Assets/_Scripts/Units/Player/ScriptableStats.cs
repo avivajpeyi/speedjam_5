@@ -58,6 +58,9 @@ namespace Special2dPlayerController {
         [Tooltip("Allow wall sliding & jumping")]
         public bool AllowWalls = true;
         
+        [Tooltip("Set this to the platform layer")]
+        public LayerMask PlatformLayer;
+
         [Tooltip("Set this to the layer climbable walls are on")]
         public LayerMask ClimbableLayer;
         

@@ -21,6 +21,8 @@ public class DistanceTracker : MonoBehaviour
     {
         // Initialize distances
         currentDistance = 0f;
+        player = FindObjectOfType<Special2dPlayerController.PlayerController>().transform;
+        
         bestDistance = PlayerPrefs.GetFloat("BestDistance", 0f); // Load best distance from PlayerPrefs
 
         // Set initial UI values

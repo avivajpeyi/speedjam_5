@@ -30,7 +30,7 @@ namespace Special2dPlayerController {
             HandleGroundEffects();
             HandleWallSlideEffects();
             SetParticleColor(Vector2.down, _moveParticles);
-            // HandleAnimations();
+            HandleAnimations();
             HandleJumpTrailRenderer();
         }
 
@@ -187,7 +187,6 @@ namespace Special2dPlayerController {
 
             SetColor(_jumpParticles);
             SetColor(_launchParticles);
-            Debug.Log("Jump particles played!");
             _jumpParticles.Play();
         }
 
@@ -251,7 +250,7 @@ namespace Special2dPlayerController {
             ResetFlags();
             if (state == _currentState) return;
             
-            // _anim.Play(state, 0); //_anim.CrossFade(state, 0, 0);
+            _anim.Play(state, 0); //_anim.CrossFade(state, 0, 0);
             _currentState = state;
 
             int GetState() {

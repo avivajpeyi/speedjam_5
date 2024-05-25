@@ -13,7 +13,6 @@ namespace Special2dPlayerController {
 
         private Rigidbody2D _rb;
         private PlayerInput _input;
-        private DragManager _dragManager;
         private CapsuleCollider2D[] _cols; // Standing and Crouching colliders
         private CapsuleCollider2D _col; // Current collider
         private Bounds _standingColliderBounds = new(new(0, 0.75f), Vector3.one); // gets overwritten in Awake. When not in play mode, is used for Gizmos
@@ -25,8 +24,6 @@ namespace Special2dPlayerController {
         private int _fixedFrame;
         private bool _hasControl = true;
 
-        [SerializeField] private float jumpForce = 30;
-        
         #endregion
 
         #region External
@@ -71,7 +68,6 @@ namespace Special2dPlayerController {
         protected virtual void Awake() {
             _rb = GetComponent<Rigidbody2D>();
             _input = GetComponent<PlayerInput>();
-            _dragManager = GetComponentInChildren<DragManager>();
             _cols = GetComponents<CapsuleCollider2D>();
 
             // Colliders cannot be check whilst disabled. Let's cache its bounds
@@ -82,16 +78,8 @@ namespace Special2dPlayerController {
             _cachedTriggerSetting = Physics2D.queriesHitTriggers;
 
             SetCrouching(false);
-            
-            
-            _dragManager.OnMouseRelease.AddListener(TriggerJump);
-            
         }
 
-
-
-        
-        
         protected virtual void Update() {
             GatherInput();
         }
@@ -117,10 +105,10 @@ namespace Special2dPlayerController {
             HandleLedges();
             HandleLadders();
             
-            HandleCrouching();
+            // HandleCrouching();
             HandleJump();
             HandleDash();
-            HandleAttacking();
+            // HandleAttacking();
             
             HandleHorizontal();
             HandleVertical();
@@ -146,7 +134,8 @@ namespace Special2dPlayerController {
             // Ground and Ceiling
             var origin = (Vector2)transform.position + _col.offset;
             _groundHitCount = Physics2D.CapsuleCastNonAlloc(origin, _col.size, _col.direction, 0, Vector2.down, _groundHits, _stats.GrounderDistance, ~_stats.PlayerLayer);
-            _ceilingHitCount = Physics2D.CapsuleCastNonAlloc(origin, _col.size, _col.direction, 0, Vector2.up, _ceilingHits, _stats.GrounderDistance, ~_stats.PlayerLayer);
+            LayerMask ceilingMask = ~(_stats.PlayerLayer | _stats.PlatformLayer);
+            _ceilingHitCount = Physics2D.CapsuleCastNonAlloc(origin, _col.size, _col.direction, 0, Vector2.up, _ceilingHits, _stats.GrounderDistance, ceilingMask);
 
             // Walls and Ladders
             var bounds = GetWallDetectionBounds();
@@ -164,11 +153,15 @@ namespace Special2dPlayerController {
 
         protected virtual void HandleCollisions() {
             // Hit a Ceiling
-            if (_speed.y > 0 && _ceilingHitCount > 0) _speed.y = 0;
+            if (_speed.y > 0 && _ceilingHitCount > 0)
+            {
+                Debug.Log("Hit celing");
+                _speed.y = 0;
+                
+            }
 
             // Landed on the Ground
             if (!_grounded && _groundHitCount > 0) {
-                _dragManager.Show();
                 _grounded = true;
                 ResetDash();
                 ResetJump();
@@ -398,24 +391,6 @@ namespace Special2dPlayerController {
             _speed.y = _stats.JumpPower;
             Jumped?.Invoke(false);
         }
-        
-        void TriggerJump()
-        {
-            if (_grounded)
-            {
-                _endedJumpEarly = false;
-                _bufferedJumpUsable = false;
-                _coyoteUsable = false;
-                _doubleJumpUsable = true;
-                ToggleClimbingLadders(false);
-                ApplyVelocity(_dragManager.DragVector * jumpForce , PlayerForce.Burst);
-                _dragManager.Hide();
-                
-                Jumped?.Invoke(false);
-            }
-            
-        }
-        
 
         protected virtual void WallJump() {
             _endedJumpEarly = false;
@@ -557,7 +532,6 @@ namespace Special2dPlayerController {
                 // We use a raycast here as the groundHits from capsule cast act a bit weird.
                 Physics2D.queriesHitTriggers = false;
                 var hit = Physics2D.Raycast(transform.position, Vector2.down, _stats.GrounderDistance * 2, ~_stats.PlayerLayer);
-                // Debug.Log("Items hit from grounded check: " + hit);
                 Physics2D.queriesHitTriggers = _cachedTriggerSetting;
                 if (hit.collider != null) {
                     _groundNormal = hit.normal;
@@ -600,6 +574,16 @@ namespace Special2dPlayerController {
 
 #if UNITY_EDITOR
         private void OnDrawGizmos() {
+        
+            // Show grounded state
+            Vector3 statePos = transform.position + Vector3.up * 2;
+            Gizmos.color = _grounded ? Color.green : Color.red;
+            Gizmos.DrawSphere(statePos, 0.2f);
+            
+            // Draw ray for ground detection
+            Gizmos.color = Color.green;
+            Gizmos.DrawRay(transform.position, Vector3.down * _stats.GrounderDistance);
+            
             if (_stats.ShowWallDetection) {
                 Gizmos.color = Color.white;
                 var bounds = GetWallDetectionBounds();
@@ -616,22 +600,16 @@ namespace Special2dPlayerController {
                 Gizmos.DrawRay(grabHeight + _stats.LedgeRaycastSpacing * Vector3.up, 0.5f * facingDir * Vector3.right);
             }
             
-            if (_isOnWall) {
-                Gizmos.color = Color.yellow;
-                foreach (var wallHit in _wallHits)
-                {
-                    if (wallHit.GetComponent<Collider>() != null)
-                        Gizmos.DrawWireSphere(wallHit.ClosestPoint(transform.position), 0.5f);
-                        
-                }
-                
-            }
-
-            // Show the Grounded Distance
-            Gizmos.color = Color.green;
-            Gizmos.DrawRay(transform.position, Vector2.down * _stats.GrounderDistance);
-            
-
+            // if (_isOnWall) {
+            //     Gizmos.color = Color.yellow;
+            //     foreach (var wallHit in _wallHits)
+            //     {
+            //         if (wallHit.GetComponent<Collider>() != null)
+            //             Gizmos.DrawWireSphere(wallHit.ClosestPoint(transform.position), 0.5f);
+            //             
+            //     }
+            //     
+            // }
         }
 #endif
     }

@@ -21,27 +21,30 @@ MonoBehaviour:
   CrouchSpeedPenalty: 0.5
   CrouchSlowdownFrames: 50
   CrouchBufferCheck: 0.1
-  AllowDoubleJump: 0
+  AllowDoubleJump: 1
   JumpPower: 36
   MaxFallSpeed: 40
   FallAcceleration: 110
   JumpEndEarlyGravityModifier: 3
   CoyoteFrames: 7
   JumpBufferFrames: 7
-  AllowWalls: 0
+  AllowWalls: 1
+  PlatformLayer:
+    serializedVersion: 2
+    m_Bits: 128
   ClimbableLayer:
     serializedVersion: 2
-    m_Bits: 8
-  RequireInputPush: 0
-  WallClimbSpeed: 5
-  WallFallAcceleration: 8
+    m_Bits: 64
+  RequireInputPush: 1
+  WallClimbSpeed: 0
+  WallFallAcceleration: 15
   MaxWallFallSpeed: 15
-  WallJumpPower: {x: 30, y: 25}
+  WallJumpPower: {x: 25, y: 30}
   WallJumpInputLossFrames: 18
   SnapToLadders: 0
   LadderLayer:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 0
   LadderSnapSpeed: 0.05
   LadderShimmySpeedMultiplier: 0.5
   LadderClimbSpeed: 8
