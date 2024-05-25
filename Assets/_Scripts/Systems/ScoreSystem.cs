@@ -15,7 +15,7 @@ public struct ScoreData
 
 public class ScoreSystem : StaticInstance<ScoreSystem>
 {
-    const string LEADERBOARD_KEY = "123";
+    const string LEADERBOARD_KEY = "leaderboard";
 
 
     void Start()
@@ -25,6 +25,7 @@ public class ScoreSystem : StaticInstance<ScoreSystem>
 
     void StartLootLockerSession()
     {
+        Debug.Log("Starting LootLocker session");
         LootLockerSDKManager.StartGuestSession((response) =>
         {
             if (!response.success)
@@ -120,28 +121,6 @@ public class ScoreSystem : StaticInstance<ScoreSystem>
     
     
     
-    public void StartGuestSession()
-    {
-        /* Start guest session without an identifier.
-         * LootLocker will create an identifier for the user and store it in PlayerPrefs.
-         * If you want to create a new player when testing, you can use PlayerPrefs.DeleteKey("LootLockerGuestPlayerID");
-         */
-        PlayerPrefs.DeleteKey("LootLockerGuestPlayerID");
-        LootLockerSDKManager.StartGuestSession((response) =>
-        {
-            // if (response.success)
-            // {
-            //     infoText.text = "Guest session started";
-            //     playerIDText.text = "Player ID:" + response.player_id.ToString();
-            //     memberID = response.player_id.ToString();
-            //     UpdateLeaderboardTop10();
-            //     UpdateLeaderboardCentered();
-            // }
-            // else
-            // {
-            //     infoText.text = "Error" + response.errorData.message;
-            // }
-        });
-    }
+
 
 }
