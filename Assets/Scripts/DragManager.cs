@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Special2dPlayerController;
 using UnityEngine;
 
 
@@ -23,7 +24,7 @@ public class DragManager : MonoBehaviour
     private Vector3 endPoint;
     private bool isDragging = false;
 
-    public Vector2 DragVector
+    public Vector2 DragDirection
     {
         get
         {
@@ -39,6 +40,16 @@ public class DragManager : MonoBehaviour
             return Vector2.Distance(startPoint, endPoint) / maxLength;
         }
     }
+
+    public Vector2 DragVector
+    {
+        get
+        {
+            return -DragDirection * Percent;    
+        }
+        
+    }
+    
 
 
     private void OnDrawGizmos()
@@ -119,7 +130,7 @@ public class DragManager : MonoBehaviour
         // Clear the line when releasing the mouse button
         lineRenderer.positionCount = 0;
         
-        Debug.Log("DragVector: " + DragVector + ", Percent: " + Percent); 
+        Debug.Log("DragDirection: " + DragDirection + ", Percent: " + Percent); 
 
     }
 

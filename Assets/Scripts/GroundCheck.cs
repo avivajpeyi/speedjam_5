@@ -9,18 +9,31 @@ public class GroundCheck : MonoBehaviour
     private Rigidbody2D rb;
     public bool isGrounded;
 
-    [SerializeField] private float vMag;
-    private float vThreshold = 2.0f;
+    // [SerializeField] private float vMag;
+    // bool velocityIsLow
+    // {
+    //     private float vThreshold = 2.0f;
+    //     get { return rb.velocity.magnitude <= vThreshold; }
+    // }
+    //
+    //
+    // private void Update()
+    // {
+    //     vMag = rb.velocity.magnitude;
+    // }
+    
+    
+    private float lastGroundedTime;
+    private float groundedDuration = 0.1f; // Duration to check for wasGrounded
 
-    bool velocityIsLow
+    public bool wasGrounded
     {
-        get { return rb.velocity.magnitude <= vThreshold; }
+        get
+        {
+            return (Time.time - lastGroundedTime) <= groundedDuration;
+        }
     }
 
-    private void Update()
-    {
-        vMag = rb.velocity.magnitude;
-    }
 
     private void Start()
     {
