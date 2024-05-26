@@ -22,13 +22,13 @@ MonoBehaviour:
   CrouchSlowdownFrames: 50
   CrouchBufferCheck: 0.1
   AllowDoubleJump: 1
-  JumpPower: 36
+  JumpPower: 50
   MaxFallSpeed: 40
   FallAcceleration: 110
   JumpEndEarlyGravityModifier: 3
   CoyoteFrames: 7
   JumpBufferFrames: 7
-  AllowWalls: 1
+  AllowWalls: 0
   PlatformLayer:
     serializedVersion: 2
     m_Bits: 128
