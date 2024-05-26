@@ -28,14 +28,14 @@ MonoBehaviour:
   JumpEndEarlyGravityModifier: 3
   CoyoteFrames: 7
   JumpBufferFrames: 7
-  AllowWalls: 0
+  AllowWalls: 1
   PlatformLayer:
     serializedVersion: 2
     m_Bits: 128
   ClimbableLayer:
     serializedVersion: 2
     m_Bits: 64
-  RequireInputPush: 1
+  RequireInputPush: 0
   WallClimbSpeed: 3
   WallFallAcceleration: 15
   MaxWallFallSpeed: 15

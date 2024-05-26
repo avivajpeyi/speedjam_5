@@ -4,12 +4,19 @@ using UnityEngine;
 
 public class WinTrigger : MonoBehaviour
 {
+    
+    
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.TryGetComponent(out PlayerController controller))
+        Debug.Log($"{other.name} eneterd Trigger area");
+        
+        if (other.TryGetComponent(out Special2dPlayerController.PlayerController controller))
         {
-            Debug.Log("You win!");
-            Debug.Log("<Upload Time to Leaderboard>");
+            Debug.Log("Game win area reached!");
+            GameManager.Instance.GameCompleted();
         }
     }
+    
+    
+    
 }

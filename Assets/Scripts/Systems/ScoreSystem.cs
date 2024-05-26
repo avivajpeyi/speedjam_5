@@ -10,7 +10,7 @@ using LootLocker.Requests;
 public struct ScoreData
 {
     public string playerId;
-    public int score;
+    public float score;
     public string metadata;
 }
 
@@ -18,12 +18,35 @@ public struct ScoreData
 public class ScoreSystem : StaticInstance<ScoreSystem>
 {
     const string LEADERBOARD_KEY = "leaderboard";
+    public string player_id;
+    const int scoreConversion = 100;
+    
+    bool SessionStarted = false;
+    public List<ScoreData> downloadedScores = new List<ScoreData>();
+
+
+    public static event Action OnDownloadScoresCompleted;
+    public static event Action OnSessionInitialized;
+    public static event Action OnPlayerIdInitialized;
 
 
     void Start()
     {
         StartLootLockerSession();
     }
+
+    private void OnEnable()
+    {
+        OnSessionInitialized += StartGuestSession;
+        OnPlayerIdInitialized += DownloadScores;
+    }
+
+    private void OnDisable()
+    {
+        OnSessionInitialized -= StartGuestSession;
+        OnPlayerIdInitialized -= DownloadScores;
+    }
+
 
     void StartLootLockerSession()
     {
@@ -37,18 +60,18 @@ public class ScoreSystem : StaticInstance<ScoreSystem>
                 return;
             }
 
+            OnSessionInitialized?.Invoke();
+            SessionStarted = true;
             Debug.Log("successfully started LootLocker session");
         });
     }
 
 
-    public List<ScoreData> DownloadScores(
-        Action<List<ScoreData>> callback
-        )
+    public void DownloadScores()
     {
         Debug.Log("Starting DownloadScores");
-        
-        List<ScoreData> scores = new List<ScoreData>();
+
+        downloadedScores = new List<ScoreData>();
 
         int count = 50;
 
@@ -60,83 +83,70 @@ public class ScoreSystem : StaticInstance<ScoreSystem>
                 Debug.Log("Successful");
                 foreach (var leaderboardMember in response.items)
                 {
-                    
-                    
-                    Debug.Log(leaderboardMember.member_id + " " + leaderboardMember.score);
-                    scores.Add(new ScoreData
+                    // format message of  Id: {id} Score: {score} Metadata: {metadata}
+                    Debug.Log(
+                        $"Id: {leaderboardMember.member_id} " +
+                        $"Score: {leaderboardMember.score} " +
+                        $"Metadata: {leaderboardMember.metadata}"
+                    );
+                    downloadedScores.Add(new ScoreData
                     {
                         playerId = leaderboardMember.member_id,
-                        score = leaderboardMember.score,
+                        score = leaderboardMember.score / scoreConversion,
                         metadata = leaderboardMember.metadata
                     });
                 }
-                callback(scores);
+
+                OnDownloadScoresCompleted?.Invoke();
             }
             else
             {
                 Debug.Log("failed: " + response.errorData);
             }
         });
-
-        return scores;
     }
 
-    public void UploadScore(string playerID, int score)
+    public void UploadScore(float score, string metadata)
     {
         LootLockerSDKManager.SubmitScore(
-            playerID,
-            score,
-            LEADERBOARD_KEY,
+            memberId: player_id,
+            score: (int)score * scoreConversion,
+            leaderboardKey: LEADERBOARD_KEY,
+            metadata: metadata,
             (response) =>
             {
                 if (response.statusCode == 200)
                 {
-                    Debug.Log("Successful");
+                    Debug.Log($"Successfully uploaded scores {score} for {player_id}");
+                    DownloadScores();
                 }
                 else
                 {
-                    Debug.Log("failed: " + response.errorData);
+                    Debug.Log("Score upload failed: " + response.errorData);
                 }
             });
     }
-    //
-    //
-    // public void UploadScore()
-    // {
-    //     /*
-    //      * Get the players System language and send it as metadata
-    //      */
-    //     string metadata = Application.systemLanguage.ToString();
-    //
-    //     /*
-    //      * Since this is a player leaderboard, member_id is not needed, 
-    //      * the logged in user is the one that will upload the score.
-    //      */ 
-    //     // Not working, fix!
-    //     float floatScore = float.Parse(scoreInputField.text);
-    //     floatScore *= AmountToDivideBy;
-    //     string formattedString = Mathf.FloorToInt(floatScore).ToString();
-    //
-    //     LootLockerSDKManager.SubmitScore("", int.Parse(formattedString), leaderboardKey, metadata, (response) =>
-    //     {
-    //         if (response.success)
-    //         {
-    //             infoText.text = "Player score was submitted";
-    //             /*
-    //              * Update the leaderboards when the new score was sent so we can see them
-    //              */
-    //             UpdateLeaderboardCentered();
-    //             UpdateLeaderboardTop10();
-    //         }
-    //         else
-    //         {
-    //             infoText.text = "Error submitting score:" + response.errorData.message;
-    //         }
-    //     });
-    // }
-    
-    
-    
 
 
+    public void StartGuestSession()
+    {
+        /* Start guest session without an identifier.
+         * LootLocker will create an identifier for the user and store it in PlayerPrefs.
+         * If you want to create a new player when testing, you can use PlayerPrefs.DeleteKey("LootLockerGuestPlayerID");
+         */
+        PlayerPrefs.DeleteKey("LootLockerGuestPlayerID");
+        LootLockerSDKManager.StartGuestSession((response) =>
+        {
+            if (response.success)
+            {
+                player_id = response.player_id.ToString();
+                Debug.Log($"PlayerLootID established {player_id}");
+                OnPlayerIdInitialized?.Invoke();
+            }
+            else
+            {
+                Debug.Log($"Error: {response.errorData.message}");
+            }
+        });
+    }
 }
