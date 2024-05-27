@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +10,11 @@ public class Timer : MonoBehaviour
 
     void Update()
     {
-        timerText.text = TimerSystem.Instance.FormattedTime;
+        String t = TimerSystem.Instance.FormattedTime;
+        // remove miliseconds
+        t = t.Substring(0, t.Length - 1);
+        //
+        timerText.text = t;
+        //
     }
 }

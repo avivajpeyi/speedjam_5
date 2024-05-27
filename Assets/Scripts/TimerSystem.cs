@@ -33,11 +33,14 @@ public class TimerSystem : StaticInstance<TimerSystem>
         int minutes = Mathf.FloorToInt(time / 60);
         int seconds = Mathf.FloorToInt(time % 60);
         int milliseconds = Mathf.FloorToInt((time * 1000) % 1000) / 10;
-        return string.Format("{0:00}:{1:00}:{2:00}", minutes, seconds, milliseconds);
+        return string.Format("{0:00}:{1:00}.{2:00}", minutes, seconds, milliseconds);
     }
 
     public string FormattedTime
     {
         get { return FormatTime(elapsedTime); }
     }
+    
+    
+    
 }

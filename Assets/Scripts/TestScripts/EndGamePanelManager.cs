@@ -20,7 +20,8 @@ public class EndGamePanelManager : MonoBehaviour
     [SerializeField] private List<GameObject> UiToShowOnWin;
     [SerializeField] private List<GameObject> UiToHideOnWin;
     
-    AudioClip winSound;
+    [SerializeField] AudioClip winSound;
+    
 
     
     
@@ -36,6 +37,7 @@ public class EndGamePanelManager : MonoBehaviour
     {
         ScoreSystem.OnDownloadScoresCompleted -= BuildScoreTable;
         ScoreSystem.OnPlayerIdInitialized -= SetTempPlayerName;
+        GameManager.OnGameCompleted -= DisplayBoard;
     }
 
 
@@ -52,6 +54,7 @@ public class EndGamePanelManager : MonoBehaviour
     public void DisplayBoard()
     {
         AudioSystem.Instance.PlaySound(winSound);
+        
         scoreTxt.text = TimerSystem.Instance.FormattedTime;
         messageTxt.text = "You made it! Submit time?";
         
