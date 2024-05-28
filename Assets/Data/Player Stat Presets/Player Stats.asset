@@ -36,7 +36,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   RequireInputPush: 0
-  WallClimbSpeed: 3
+  WallClimbSpeed: 0
   WallFallAcceleration: 15
   MaxWallFallSpeed: 15
   WallJumpPower: {x: 25, y: 30}
